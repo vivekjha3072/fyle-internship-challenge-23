@@ -1,0 +1,66 @@
+<div class="hero">
+    <div class="search">
+        <div>
+            <label for="username">Enter GitHub Username </label>
+            <input type="text" id="username" [(ngModel)]="username" />
+            <button (click)="getUserRepos()">Get Repositories</button>
+        </div>
+    </div>
+
+    <div *ngIf="userData.login">
+        <div class="user-info">
+            <div class="avatar">
+                <img src="{{ userData.avatar_url }}" alt="image" />
+            </div>
+            <div class="user-text">
+                <h1><strong>{{ userData.name }}</strong></h1>
+                <p>{{ userData.bio }}</p>
+                <p><i class="fas fa-map-marker-alt"></i>{{ userData.location }}</p>
+                <p>Twitter:<a href="https://twitter.com/{{userData.twitter_username}}" target="_blank">https://twitter.com/{{ userData.twitter_username }}</a></p>
+            </div>
+        </div>
+        <p><i class="fas fa-link"></i><a [href]="userData.html_url" target="_blank">{{ userData.html_url }}</a></p>
+    </div>
+
+    <div *ngIf="repos.length > 0">
+        <div>
+            <ul class="boxes">
+                <li class="box" *ngFor="let repo of repos">
+                    <h1><strong><a [href]="repo.html_url" target="_blank">{{ repo.name }}</a></strong>
+                    </h1>
+                    <p *ngIf="repo.description == null"> </p>
+                    <p *ngIf="repo.description != null">{{ repo.description }}</p>
+                    <div class="languages" *ngIf="repo.languages">
+                        <div *ngFor="let lang of repo.languages | keyvalue">
+                            <button class="btn">{{ lang.key }}</button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div>
+            <div class="pagination">
+                <button (click)="onPageChange(currentPage - 10)" [disabled]="currentPage <= 10"><<</button>
+                <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"><</button>
+
+                <ng-container *ngFor="let pageNumber of getPageNumbers()">
+                    <button class="page-numbers" (click)="onPageChange(pageNumber)" [disabled]="currentPage === pageNumber">{{ pageNumber }}</button>
+                </ng-container>
+
+                <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages">></button>
+                <button (click)="onPageChange(currentPage + 10)" [disabled]="currentPage + 10 > totalPages">>></button>
+
+                <label for="reposPerPage">Repos per page:</label>
+                <select id="reposPerPage" [(ngModel)]="selectedReposPerPage" (change)="onReposPerPageChange()">
+              <option *ngFor="let option of reposPerPageOptions" [value]="option">{{ option }}</option>
+            </select>
+            </div>
+            <div class="extra-buttons">
+                <button (click)="onPageChange(1)" [disabled]="currentPage === 1">Oldest</button>
+                <button (click)="onPageChange(totalPages)" [disabled]="currentPage === totalPages">Newest</button>
+            </div>
+        </div>
+
+    </div>
+</div>
